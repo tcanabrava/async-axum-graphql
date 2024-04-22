@@ -1,0 +1,23 @@
+[package]
+name = "canabrava_recipes"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.7.5"
+reqwest = "0.12.4"
+sqlx = "0.7.4"
+thiserror = "1.0.59"
+tokio = { version = "1.37.0", features = ["macros", "rt-multi-thread"] }
+serde = { version = "1.0", features = ["derive"] }
+derive_more = "0.99.17"
+
+[dependencies.sea-orm]
+version = "0.12"
+features = [
+    "debug-print",
+    "runtime-tokio-native-tls",
+    "sqlx-postgres",
+]
