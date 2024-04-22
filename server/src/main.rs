@@ -3,6 +3,9 @@ use axum::{
     routing::{get,post},
     Router,
 };
+use anyhow::{Context, Result};
+
+use sea_orm::{Database, DatabaseConnection, ConnectOptions};
 
 use std::time::Duration;
 use std::sync::Arc;
@@ -40,6 +43,9 @@ struct Recipe {
     steps: Vec<RecipeStep>,
     votes: Vote,
 }
+struct AppState {
+    db: DatabaseConnection
+}
 
 pub mod v1 {
     use super::*;
@@ -67,13 +73,24 @@ pub mod v1 {
     }
 }
 
-struct AppState {
 
-}
 
 #[tokio::main]
 async fn main() {
-    let state = Arc::new(AppState{});
+    let mut opt = ConnectOptions::new("protocol://username:password@host/database");
+    
+    opt.max_connections(100)
+        .min_connections(5)
+        .connect_timeout(Duration::from_secs(8))
+        .acquire_timeout(Duration::from_secs(8))
+        .idle_timeout(Duration::from_secs(8))
+        .max_lifetime(Duration::from_secs(8))
+        .sqlx_logging(true)
+        .sqlx_logging_level(log::LevelFilter::Info)
+        .set_schema_search_path("my_schema"); // Setting default PostgreSQL schema
+
+    let db = Database::connect(opt).await.unwrap();
+    let state = Arc::new(AppState{db});
 
     let app = Router::new()
         .route("/v1/ok", get(v1::ok))
@@ -85,5 +102,5 @@ async fn main() {
         .await
         .unwrap();
 
-    axum::serve(listener, app).await.unwrap()
+    axum::serve(listener, app).await.unwrap();
 }
