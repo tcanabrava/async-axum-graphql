@@ -19,6 +19,8 @@ dotenv = "0.15.0"
 clap = "4.5.4"
 entity = { path = "../entity" }
 migration = {path = "../migration" }
+tracing-subscriber = "0.3.18"
+tracing = "0.1.40"
 
 [dependencies.sea-orm]
 version = "1.0.0-rc.3"

@@ -3,8 +3,10 @@ use axum::{
     routing::{get,post},
     Router,
 };
+use dotenv;
 
 use sea_orm::{Database, DatabaseConnection, ConnectOptions};
+use sqlx::database;
 
 use std::time::Duration;
 use std::sync::Arc;
@@ -76,7 +78,14 @@ pub mod v1 {
 
 #[tokio::main]
 async fn main() {
-    let mut opt = ConnectOptions::new("protocol://username:password@host/database");
+    tracing_subscriber::fmt()
+    .with_max_level(tracing::Level::DEBUG)
+    .with_test_writer()
+    .init();
+
+    dotenv::dotenv().ok();
+    let database_url = dotenv::var("DATABASE_URL").unwrap();
+    let mut opt = ConnectOptions::new(database_url);
     
     opt.max_connections(100)
         .min_connections(5)
@@ -85,8 +94,7 @@ async fn main() {
         .idle_timeout(Duration::from_secs(8))
         .max_lifetime(Duration::from_secs(8))
         .sqlx_logging(true)
-        .sqlx_logging_level(log::LevelFilter::Info)
-        .set_schema_search_path("my_schema"); // Setting default PostgreSQL schema
+        .sqlx_logging_level(log::LevelFilter::Info);
 
     let db = Database::connect(opt).await.unwrap();
     let state = Arc::new(AppState{db});
