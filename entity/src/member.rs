@@ -13,7 +13,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     #[serde(skip_deserializing)]
     pub id: i32,
-//    pub pid: Uuid,
+    pub pid: Uuid,
     pub title: String,
     pub text: String,
     pub email: String,

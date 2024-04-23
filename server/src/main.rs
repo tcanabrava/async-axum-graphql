@@ -11,9 +11,16 @@ use sea_orm::{Database, DatabaseConnection, ConnectOptions};
 
 use std::time::Duration;
 use std::sync::Arc;
-use serde::Serialize;
-use entity::{prelude::*, *};
 
+use entity::{prelude::*, 
+    // Re-Exports, so we use the same lib
+    sea_orm,
+    async_graphql,
+
+    // Elements I'm using from the
+    member
+};
+use serde::{Serialize, Deserialize};
 pub struct AppState {
     db: DatabaseConnection
 }
@@ -35,7 +42,7 @@ pub mod v1 {
 
     pub async fn add_member(
         State(state): State<Arc<AppState>>,
-        Json(payload): Json<entity::member::Model>)
+        Json(payload): Json<member::Model>)
         -> (StatusCode, Json<DatabaseInsertion>)
     {
         let mut model = member::ActiveModel::from(payload);

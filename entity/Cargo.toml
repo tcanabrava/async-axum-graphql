@@ -6,9 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = "1.0.198"
-async-graphql = "7.0.3"
+serde = { version = "1.0", features = ["derive"] }
+async-graphql = { version = "7.0.3", features = ["uuid", "chrono"] }
 async-graphql-axum = "7.0.3"
+chrono = { version = "0.4.38", features = ["serde"] }
+uuid = { version = "1.8.0", features = ["serde", "v4", "fast-rng"] }
 
 [dependencies.sea-orm]
 version = "1.0.0-rc.3"
@@ -16,4 +18,5 @@ features = [
     "debug-print",
     "runtime-tokio-native-tls",
     "sqlx-postgres",
+    "uuid"
 ]

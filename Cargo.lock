@@ -229,6 +229,7 @@ dependencies = [
  "async-trait",
  "base64 0.21.7",
  "bytes",
+ "chrono",
  "fast_chemail",
  "fnv",
  "futures-util",
@@ -247,6 +248,7 @@ dependencies = [
  "static_assertions_next",
  "tempfile",
  "thiserror",
+ "uuid",
 ]
 
 [[package]]
@@ -692,7 +694,6 @@ dependencies = [
  "reqwest",
  "sea-orm",
  "serde",
- "sqlx",
  "thiserror",
  "tokio",
  "tracing",
@@ -725,8 +726,10 @@ checksum = "a21f936df1771bf62b77f047b726c4625ff2e8aa607c01ec06e5a05bd8463401"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-targets 0.52.5",
 ]
 
@@ -997,8 +1000,10 @@ version = "0.1.0"
 dependencies = [
  "async-graphql",
  "async-graphql-axum",
+ "chrono",
  "sea-orm",
  "serde",
+ "uuid",
 ]
 
 [[package]]
@@ -3790,6 +3795,8 @@ version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a183cf7feeba97b4dd1c0d46788634f6221d87fa961b305bed08c851829efcc0"
 dependencies = [
+ "getrandom",
+ "rand",
  "serde",
 ]
 

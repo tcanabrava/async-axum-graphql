@@ -3,6 +3,7 @@
 pub mod prelude;
 pub use async_graphql;
 pub use sea_orm;
+pub use serde;
 
 pub mod ingredient;
 pub mod ingredient_media_picture;
