@@ -36,7 +36,7 @@ pub mod v1 {
     pub async fn add_member(
         State(state): State<Arc<AppState>>,
         Json(payload): Json<entity::member::Model>)
-        -> Json<DatabaseInsertion>
+        -> (StatusCode, Json<DatabaseInsertion>)
     {
         let mut model = member::ActiveModel::from(payload);
         model.id = ActiveValue::not_set();
@@ -44,8 +44,12 @@ pub mod v1 {
         let res = model.insert(&state.db).await;
 
         match res {
-            Ok(_) => Json(DatabaseInsertion{status: StatusCode::CREATED.as_u16(), text: "".to_owned()}),
-            Err(err) => Json(DatabaseInsertion{status: StatusCode::CONFLICT.as_u16(), text: err.to_string()})
+            Ok(_) => (
+                StatusCode::CREATED,
+                Json(DatabaseInsertion{status: StatusCode::CREATED.as_u16(), text: "".to_owned()})),
+            Err(err) => (StatusCode
+                ::CONFLICT, 
+                Json(DatabaseInsertion{status: StatusCode::CONFLICT.as_u16(), text: err.to_string()}))
         }
     }
 }

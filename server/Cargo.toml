@@ -21,6 +21,8 @@ entity = { path = "../entity" }
 migration = {path = "../migration" }
 tracing-subscriber = "0.3.18"
 tracing = "0.1.40"
+async-graphql = "7.0.3"
+async-graphql-axum = "7.0.3"
 
 [dependencies.sea-orm]
 version = "1.0.0-rc.3"
