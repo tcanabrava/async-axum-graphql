@@ -9,6 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     #[serde(skip_deserializing)]
     pub id: i32,
+    pub pid: Uuid,
     pub path: String,
     pub thumbnail: String,
     pub width: i32,

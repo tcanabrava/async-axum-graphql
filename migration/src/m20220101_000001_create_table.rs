@@ -10,8 +10,11 @@ impl MigrationTrait for Migration {
         manager.create_table(Table::create().table(Member::Table)
             .if_not_exists()
             .col(pk_auto(Member::Id))
+            .col(uuid(Member::Pid))
             .col(string(Member::Title))
             .col(string(Member::Text))
+            .col(string(Member::Email))
+            .col(string(Member::Password))
             .to_owned(),
         )
         .await?;
@@ -19,6 +22,7 @@ impl MigrationTrait for Migration {
         manager.create_table(Table::create().table(Ingredient::Table)
             .if_not_exists()
             .col(pk_auto(Ingredient::Id))
+            .col(uuid(Ingredient::Pid))
             .col(string(Ingredient::Title))
             .col(string(Ingredient::Text))
             .col(integer(Ingredient::MemberId))
@@ -32,6 +36,7 @@ impl MigrationTrait for Migration {
         manager.create_table(Table::create().table(Recipe::Table)
             .if_not_exists()
             .col(pk_auto(Recipe::Id))
+            .col(uuid(Recipe::Pid))
             .col(string(Recipe::Title))
             .col(string(Recipe::Text))
             .to_owned(),
@@ -62,6 +67,7 @@ impl MigrationTrait for Migration {
             Table::create().table(RecipeStep::Table)
             .if_not_exists()
             .col(pk_auto(RecipeStep::Id))
+            .col(uuid(RecipeStep::Pid))
             .col(integer(RecipeStep::RecipeId))
             .col(integer(RecipeStep::MemberId))
             .col(string(RecipeStep::Title))
@@ -80,6 +86,7 @@ impl MigrationTrait for Migration {
         manager.create_table(Table::create().table(MediaPicture::Table)
             .if_not_exists()
             .col(pk_auto(MediaPicture::Id))
+            .col(uuid(MediaPicture::Pid))
             .col(string(MediaPicture::Path))
             .col(string(MediaPicture::Thumbnail))
             .col(integer(MediaPicture::Width))
@@ -88,13 +95,14 @@ impl MigrationTrait for Migration {
         ).await?;
 
         manager.create_table(Table::create().table(MediaVideo::Table)
-        .if_not_exists()
-        .col(pk_auto(MediaVideo::Id))
-        .col(string(MediaVideo::Path))
-        .col(string(MediaVideo::Thumbnail))
-        .col(integer(MediaVideo::Width))
-        .col(integer(MediaVideo::Height))
-        .to_owned()
+            .if_not_exists()
+            .col(pk_auto(MediaVideo::Id))
+            .col(uuid(MediaVideo::Pid))
+            .col(string(MediaVideo::Path))
+            .col(string(MediaVideo::Thumbnail))
+            .col(integer(MediaVideo::Width))
+            .col(integer(MediaVideo::Height))
+            .to_owned()
         ).await?;
     
         manager.create_table(Table::create().table(RecipeStepMediaPicture::Table)
@@ -188,14 +196,18 @@ impl MigrationTrait for Migration {
 enum Member {
     Table,
     Id,
+    Pid,
     Title,
     Text,
+    Email,
+    Password,
 }
 
 #[derive(DeriveIden)]
 enum Ingredient {
     Table,
     Id,
+    Pid,
     Title,
     Text,
     MemberId,
@@ -205,6 +217,7 @@ enum Ingredient {
 enum Recipe {
     Table,
     Id,
+    Pid,
     Title,
     Text
 }
@@ -228,6 +241,7 @@ enum RecipeIngredient {
 enum RecipeStep {
     Table,
     Id,
+    Pid,
     Title,
     Text,
     RecipeId,
@@ -266,6 +280,7 @@ enum IngredientMediaVideo {
 enum MediaPicture {
     Table,
     Id,
+    Pid,
     Path,
     Width,
     Height,
@@ -276,6 +291,7 @@ enum MediaPicture {
 enum MediaVideo {
     Table,
     Id,
+    Pid,
     Path,
     Width,
     Height,
