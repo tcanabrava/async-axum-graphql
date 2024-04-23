@@ -3,7 +3,6 @@ use axum::{
     routing::{get,post},
     Router,
 };
-use anyhow::{Context, Result};
 
 use sea_orm::{Database, DatabaseConnection, ConnectOptions};
 

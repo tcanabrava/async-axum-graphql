@@ -17,11 +17,14 @@ log = "0.4.21"
 anyhow = "1.0.82"
 dotenv = "0.15.0"
 clap = "4.5.4"
+entity = { path = "../entity" }
+migration = {path = "../migration" }
 
 [dependencies.sea-orm]
-version = "0.12"
+version = "1.0.0-rc.3"
 features = [
     "debug-print",
     "runtime-tokio-native-tls",
     "sqlx-postgres",
 ]
+
