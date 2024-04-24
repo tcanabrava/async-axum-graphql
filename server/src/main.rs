@@ -1,29 +1,27 @@
 use axum::{
-    extract::{Path, Json, State},
+    extract::{Json, State},
     routing::{get,post},
     Router,
-    response::{Html, IntoResponse},
-    http::{StatusCode, Uri, header::{self, HeaderMap, HeaderName}},
+    http::StatusCode,
 };
 use dotenv;
-use std::collections::HashMap;
-use sea_orm::{Database, DatabaseConnection, ConnectOptions};
-
+use sea_orm::{Database, ConnectOptions};
 use std::time::Duration;
 use std::sync::Arc;
 
-use entity::{prelude::*, 
+use entity::{
     // Re-Exports, so we use the same lib
     sea_orm,
-    async_graphql,
 
     // Elements I'm using from the
     member
 };
-use serde::{Serialize, Deserialize};
-pub struct AppState {
-    db: DatabaseConnection
-}
+use serde::Serialize;
+
+mod graphql;
+
+mod state;
+use state::AppState;
 
 #[derive(Serialize)]
 pub struct DatabaseInsertion {
@@ -83,7 +81,9 @@ async fn main() {
         .sqlx_logging_level(log::LevelFilter::Info);
 
     let db = Database::connect(opt).await.unwrap();
-    let state = Arc::new(AppState{db});
+    let state = Arc::new(
+        AppState{db: db}
+    );
 
     let app = Router::new()
         .route("/v1/ok", get(v1::ok))

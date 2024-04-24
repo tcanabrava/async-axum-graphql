@@ -15,6 +15,7 @@ uuid = { version = "1.8.0", features = ["serde", "v4", "fast-rng"] }
 [dependencies.sea-orm]
 version = "1.0.0-rc.3"
 features = [
+    "macros",
     "debug-print",
     "runtime-tokio-native-tls",
     "sqlx-postgres",
