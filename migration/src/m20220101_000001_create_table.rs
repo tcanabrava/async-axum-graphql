@@ -15,7 +15,7 @@ impl MigrationTrait for Migration {
                     .col(pk_auto(Member::Id))
                     .col(uuid(Member::Pid))
                     .col(string(Member::Title))
-                    .col(string(Member::Text))
+                    .col(string(Member::Description))
                     .col(string(Member::Email))
                     .col(string(Member::Password))
                     .to_owned(),
@@ -315,7 +315,7 @@ enum Member {
     Id,
     Pid,
     Title,
-    Text,
+    Description,
     Email,
     Password,
 }

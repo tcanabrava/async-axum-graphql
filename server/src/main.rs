@@ -20,8 +20,8 @@ use serde::Serialize;
 
 mod graphql;
 
-mod state;
-use state::AppState;
+mod common;
+use common::AppState;
 
 #[derive(Serialize)]
 pub struct DatabaseInsertion {

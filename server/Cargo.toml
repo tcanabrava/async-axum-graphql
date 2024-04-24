@@ -23,6 +23,9 @@ tracing = "0.1.40"
 async-graphql = "7.0.3"
 async-graphql-axum = "7.0.3"
 uuid = { version = "1.8.0", features = ["serde", "v4", "fast-rng"] }
+async-trait = "0.1.80"
+axum-login = "0.15.1"
+argon2 = { version = "0.5.3", features = ["std"] }
 
 [dependencies.sea-orm]
 version = "1.0.0-rc.3"

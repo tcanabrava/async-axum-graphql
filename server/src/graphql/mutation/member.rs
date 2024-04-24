@@ -1,3 +1,4 @@
+use argon2::password_hash::rand_core::OsRng;
 use async_graphql::{Context, Object, Result};
 
 use entity::async_graphql::{self, InputObject, SimpleObject};
@@ -8,6 +9,12 @@ use entity::sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set};
 
 use std::sync::Arc;
 use uuid;
+
+use argon2::{
+    Argon2,
+    PasswordHasher,
+    password_hash::SaltString
+};
 
 #[derive(InputObject)]
 pub struct CreateMemberInput {
@@ -33,14 +40,27 @@ impl MemberMutation {
         input: CreateMemberInput,
     ) -> Result<member::Model> {
         let state = ctx.data::<Arc<DatabaseConnection>>()?;
+        let salt = SaltString::generate(&mut OsRng);
+        let argon_params = argon2::Params::new(15000, 2, 1, None)?;
+
+        let hasher = Argon2::new(
+            argon2::Algorithm::Argon2id,
+            argon2::Version::V0x13,
+            argon_params);
+        
+        let password_hash:String = hasher.hash_password(input.password.as_bytes(), &salt)
+            .unwrap()
+            .to_string();
+    
         let member = member::ActiveModel {
             email: Set(input.email),
-            password: Set(input.password),
+            password: Set(password_hash),
             title: Set(input.name),
             pid: Set(uuid::Uuid::new_v4()),
-            text: Set("".to_owned()),
+            description: Set("".to_owned()),
             ..Default::default()
         };
+
         let res = member.insert(state.as_ref()).await?;
         Ok(res)
     }
