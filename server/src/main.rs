@@ -1,20 +1,20 @@
+use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
+use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
-    extract::{Json, State},
-    routing::{get,post},
+    extract::State,
+    response::{Html, IntoResponse},
+    routing::{get, post},
     Router,
-    http::StatusCode,
 };
 use dotenv;
-use sea_orm::{Database, ConnectOptions};
-use std::time::Duration;
+
+use sea_orm::{ConnectOptions, Database};
 use std::sync::Arc;
+use std::time::Duration;
 
 use entity::{
     // Re-Exports, so we use the same lib
     sea_orm,
-
-    // Elements I'm using from the
-    member
 };
 use serde::Serialize;
 
@@ -26,43 +26,12 @@ use state::AppState;
 #[derive(Serialize)]
 pub struct DatabaseInsertion {
     status: u16,
-    text: String
-}
-
-pub mod v1 {
-    use sea_orm::{ActiveModelTrait, ActiveValue};
-
-    use super::*;
-
-    pub async fn ok() -> &'static str {
-        "Ok\n"
-    }
-
-    pub async fn add_member(
-        State(state): State<Arc<AppState>>,
-        Json(payload): Json<member::Model>)
-        -> (StatusCode, Json<DatabaseInsertion>)
-    {
-        let mut model = member::ActiveModel::from(payload);
-        model.id = ActiveValue::not_set();
-
-        let res = model.insert(&state.db).await;
-
-        match res {
-            Ok(_) => (
-                StatusCode::CREATED,
-                Json(DatabaseInsertion{status: StatusCode::CREATED.as_u16(), text: "".to_owned()})),
-            Err(err) => (StatusCode
-                ::CONFLICT, 
-                Json(DatabaseInsertion{status: StatusCode::CONFLICT.as_u16(), text: err.to_string()}))
-        }
-    }
+    text: String,
 }
 
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
-
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .with_test_writer()
@@ -70,7 +39,7 @@ async fn main() {
 
     let database_url = dotenv::var("DATABASE_URL").unwrap();
     let mut opt = ConnectOptions::new(database_url);
-    
+
     opt.max_connections(100)
         .min_connections(5)
         .connect_timeout(Duration::from_secs(8))
@@ -80,19 +49,38 @@ async fn main() {
         .sqlx_logging(true)
         .sqlx_logging_level(log::LevelFilter::Info);
 
-    let db = Database::connect(opt).await.unwrap();
-    let state = Arc::new(
-        AppState{db: db}
-    );
+    let db = match Database::connect(opt).await {
+        Ok(conn) => Arc::new(conn),
+        Err(err) => {
+            panic!("{:?}", err)
+        }
+    };
+
+    let state = Arc::new(AppState {
+        db: db.clone(),
+        schema: graphql::schema::build_schema(db).await,
+    });
 
     let app = Router::new()
-        .route("/v1/ok", get(v1::ok))
-        .route("/v1/member", post(v1::add_member))
+        .route("/v1/graphql", get(graphql_playground))
+        .route("/v1/graphql", post(graphql_handler))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
     axum::serve(listener, app).await.unwrap();
+}
+
+async fn graphql_handler(
+    State(state): State<Arc<AppState>>,
+    req: GraphQLRequest,
+) -> GraphQLResponse {
+    let res = state.schema.execute(req.into_inner()).await;
+    res.into()
+}
+
+async fn graphql_playground() -> impl IntoResponse {
+    Html(playground_source(GraphQLPlaygroundConfig::new(
+        "/v1/graphql",
+    )))
 }

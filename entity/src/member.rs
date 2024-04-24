@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize, SimpleObject)]
 #[sea_orm(table_name = "member")]
-#[graphql(concrete(name = "Note", params()))]
+#[graphql(concrete(name = "Member", params()))]
 pub struct Model {
     #[sea_orm(primary_key)]
     #[serde(skip_deserializing)]
