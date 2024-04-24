@@ -44,11 +44,13 @@ impl AuthnBackend for Backend {
 
     async fn authenticate(&self, Credentials{user_id}: Self::Credentials)
         -> Result<Option<Self::User>, Self::Error> {
+            todo!("Still need to implement proper authentication using axum_auth");
             Ok(self.users.get(&user_id).cloned())
     }
 
     async fn get_user(&self, user_id: &UserId<Self>)
         -> Result<Option<Self::User>, Self::Error> {
+            todo!("Still need to implement proper authentication using axum_auth");
             Ok(self.users.get(user_id).cloned())
     }
 }
