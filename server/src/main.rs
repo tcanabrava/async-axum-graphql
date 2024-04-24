@@ -71,6 +71,7 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
+#[axum::debug_handler]
 async fn graphql_handler(
     State(state): State<Arc<AppState>>,
     req: GraphQLRequest,
@@ -79,6 +80,7 @@ async fn graphql_handler(
     res.into()
 }
 
+#[axum::debug_handler]
 async fn graphql_playground() -> impl IntoResponse {
     Html(playground_source(GraphQLPlaygroundConfig::new(
         "/v1/graphql",

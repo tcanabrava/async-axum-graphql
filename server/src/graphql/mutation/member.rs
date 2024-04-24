@@ -7,6 +7,7 @@ use entity::member;
 use entity::sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set};
 
 use std::sync::Arc;
+use uuid;
 
 #[derive(InputObject)]
 pub struct CreateMemberInput {
@@ -36,6 +37,8 @@ impl MemberMutation {
             email: Set(input.email),
             password: Set(input.password),
             title: Set(input.name),
+            pid: Set(uuid::Uuid::new_v4()),
+            text: Set("".to_owned()),
             ..Default::default()
         };
         let res = member.insert(state.as_ref()).await?;
